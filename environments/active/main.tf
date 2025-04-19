@@ -64,6 +64,7 @@ resource "aws_autoscaling_group" "this" {
   max_size            = 5
   min_size            = local.env ? 1 : 0
   vpc_zone_identifier = module.subnets.public_subnet_ids
+
   launch_template {
     id      = module.ec2.launch_template_id
     version = "$Latest"
@@ -74,6 +75,8 @@ resource "aws_autoscaling_group" "this" {
   health_check_grace_period = 300
   wait_for_capacity_timeout = "0"
   force_delete              = true
+
+  depends_on = [ module.secrets_manager ]
 
   tag {
     key                 = "Name"

@@ -48,6 +48,7 @@ resource "aws_db_instance" "read_replica" {
   publicly_accessible    = false
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.id
   vpc_security_group_ids = [var.rds_sg_id]
+  skip_final_snapshot     = true
   storage_type           = "gp2"
   # multi_az               = false # Read replicas don't need to be Multi-AZ
   storage_encrypted      = true

@@ -5,9 +5,6 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
-# locals {
-#   name = var.environment == "prod" ? "primary" : "replica"
-# }
 
 resource "aws_kms_key" "primary_region_key" {
   description        = "A multi-region KMS key"

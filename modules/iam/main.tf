@@ -19,6 +19,24 @@ resource "aws_iam_role_policy_attachment" "readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# attaching s3 read-only access policy
+resource "aws_iam_role_policy_attachment" "s3_access" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
+
+# attaching secrets manager read-only access policy
+resource "aws_iam_role_policy_attachment" "secrets_manager_access" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+
+# attaching rds read-only access policy
+resource "aws_iam_role_policy_attachment" "rds_full_access" {
+  role       = aws_iam_role.instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonRDSFullAccess"
+}
+
 resource "aws_iam_instance_profile" "this" {
   name = "${var.instance_role_name}-instance-profile"
   role = aws_iam_role.instance_role.name

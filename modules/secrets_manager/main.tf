@@ -4,7 +4,7 @@ resource "random_bytes" "secrets-suffix" {
 # Secrets Manager secret for RDS endpoint
 resource "aws_secretsmanager_secret" "rds_endpoint" {
   name        = "RDSInstance-${random_bytes.secrets-suffix.hex}"
-  description = "RDS instance endpoint"
+  description = "RDS instance credentials"
 }
 
 resource "aws_secretsmanager_secret_version" "rds_endpoint_version" {
