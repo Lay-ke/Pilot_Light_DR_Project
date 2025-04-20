@@ -6,6 +6,7 @@ variable "db_instance_endpoint" {
 variable "db_name" {
   description = "The name of the database to create"
   type        = string
+  default = "plight"
 }
 
 variable "db_username" {

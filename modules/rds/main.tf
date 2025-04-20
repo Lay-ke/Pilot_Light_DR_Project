@@ -14,12 +14,14 @@ resource "aws_db_instance" "this" {
   allocated_storage       = 20
   instance_class          = "db.t3.micro"
   engine                  = "mysql"
-  backup_retention_period = 2 # Number of days to retain backups
+  backup_retention_period = 7          # Number of days to retain backups
   username                = var.db_username
   password                = var.db_password
   kms_key_id = var.kms_key_arn
   apply_immediately       = true
+  backup_window = "18:30-19:30" # Time range in UTC for backups
   skip_final_snapshot     = true
+  # final_snapshot_identifier = "${var.db_name}-final-snapshot" # is set when skip_final_snapshot is false
   db_name                 = var.db_name
   publicly_accessible     = false
   storage_type            = "gp2"
@@ -48,8 +50,9 @@ resource "aws_db_instance" "read_replica" {
   publicly_accessible    = false
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.id
   vpc_security_group_ids = [var.rds_sg_id]
+  skip_final_snapshot     = true
   storage_type           = "gp2"
-  # multi_az               = false # Read replicas don't need to be Multi-AZ
+  multi_az               = false # Read replicas don't need to be Multi-AZ
   storage_encrypted      = true
   enabled_cloudwatch_logs_exports = [
     "error",
