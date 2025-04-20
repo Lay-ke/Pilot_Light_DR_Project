@@ -50,16 +50,16 @@ module "alb" {
 
 # Module for EC2 instances behind the Load Balancer
 module "ec2" {
-  source                    = "../../modules/ec2"
-  instance_type             = var.instance_type
-  sg_id                     = module.security_groups.web_sg_id
+  source                   = "../../modules/ec2"
+  instance_type            = var.instance_type
+  sg_id                    = module.security_groups.web_sg_id
   iam_instance_profile_arn = module.iam.instance_profile_arn
-  ami_id                    = "ami-0df368112825f8d8f"
+  ami_id                   = "ami-0df368112825f8d8f"
 }
 
 # Auto Scaling Group for EC2 instances using Launch Template
 resource "aws_autoscaling_group" "this" {
-  name = "${var.environment}-web-asg"
+  name                = "${var.environment}-web-asg"
   desired_capacity    = local.env ? 2 : 0
   max_size            = 5
   min_size            = local.env ? 1 : 0
@@ -76,7 +76,7 @@ resource "aws_autoscaling_group" "this" {
   wait_for_capacity_timeout = "0"
   force_delete              = true
 
-  depends_on = [ module.secrets_manager ]
+  depends_on = [module.secrets_manager]
 
   tag {
     key                 = "Name"

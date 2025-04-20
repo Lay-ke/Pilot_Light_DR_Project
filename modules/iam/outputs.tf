@@ -17,3 +17,13 @@ output "instance_profile_arn" {
   description = "Name of the EC2 instance profile"
   value       = aws_iam_instance_profile.this.arn
 }
+
+output "update_asg_role_arn" {
+  description = "Update_asg role"
+  value = aws_iam_role.update_asg_role.arn
+}
+
+output "replica_promotion_role_arn" {
+  description = "Rds replica promotion role"
+  value = aws_iam_role.replica_promotion_role.arn
+}

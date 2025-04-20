@@ -18,4 +18,10 @@ output "instance_profile_arn" {
   value       = module.iam.instance_profile_arn
 }
 
+output "update_asg_role_arn" {
+  value = module.iam.update_asg_role_arn
+}
 
+output "replica_promotion_role_arn" {
+  value = module.iam.replica_promotion_role_arn
+}

@@ -42,6 +42,113 @@ resource "aws_iam_instance_profile" "this" {
   role = aws_iam_role.instance_role.name
 }
 
+##############################################################################################################################################
+# IAM Role for Update ASG Lambda Function
+resource "aws_iam_role" "update_asg_role" {
+  name = "UpdateASG-${var.lambda_role_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "lambda_autoscaling_policy" {
+  name        = "lambda-autoscaling-policy"
+  description = "IAM policy to allow Lambda to update and describe Auto Scaling groups"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:UpdateAutoScalingGroup",
+          "autoscaling:DescribeAutoScalingInstances"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "asg_lambda_autoscaling_policy_attachment" {
+  policy_arn = aws_iam_policy.lambda_autoscaling_policy.arn
+  role       = aws_iam_role.update_asg_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "asg_lambda_basic_execution_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.update_asg_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "asg_lambda_cloudwatch_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  role      = aws_iam_role.update_asg_role.name
+}
+
+#################################################################################################################################################
+# IAM ROle for Replica Promotion Lambda Function
+resource "aws_iam_role" "replica_promotion_role" {
+  name = "ReplicaPromotion-${var.lambda_role_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "rds_promotion_policy" {
+  name        = "rds-promotion-policy"
+  description = "IAM policy to allow Lambda to promote rds replica to primary"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "rds:PromoteReadReplica",
+          "rds:DescribeDBInstances",
+          "rds:DescribeDBClusters",
+          "rds:DescribeDBClusterSnapshots"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "rds_lambda_cloudwatch_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  role      = aws_iam_role.replica_promotion_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "rds_lambda_basic_execution_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.replica_promotion_role.name
+}
+
+
+
+
 # EKS Cluster IAM Role
 # resource "aws_iam_role" "eks_cluster_role" {
 #   name = "${var.cluster_name}-cluster-role"

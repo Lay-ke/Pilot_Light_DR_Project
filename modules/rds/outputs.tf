@@ -8,6 +8,11 @@ output "db_instance_arn" {
   value       = length(aws_db_instance.this) > 0 ? aws_db_instance.this[0].arn : null
 }
 
+output "db_replica_name" {
+  description = "RDS read replica name"
+  value = "${var.db_name}-replica"
+}
+
 output "db_instance_endpoint" {
   description = "The connection endpoint for the DB instance"
   value       = length(aws_db_instance.this) > 0 ? split(":", aws_db_instance.this[0].endpoint)[0] : split(":", aws_db_instance.read_replica[0].endpoint)[0]

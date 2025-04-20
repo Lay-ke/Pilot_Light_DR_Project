@@ -21,3 +21,9 @@ variable "environment" {
   type        = string
   
 }
+
+variable "lambda_role_name" {
+  description = "Name of the Lambda role"
+  type        = string
+  default     = "PLightLambdaRole"
+}
