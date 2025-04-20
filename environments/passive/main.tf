@@ -68,7 +68,7 @@ module "ec2" {
 
 # Auto Scaling Group for EC2 instances using Launch Template
 resource "aws_autoscaling_group" "this" {
-
+  name = "${var.environment}-web-asg"
   desired_capacity    = 0
   max_size            = 5
   min_size            = 0
@@ -83,6 +83,8 @@ resource "aws_autoscaling_group" "this" {
   health_check_grace_period = 300
   wait_for_capacity_timeout = "0"
   force_delete              = true
+
+  depends_on = [ module.secrets_manager ]
 
   tag {
     key                 = "Name"
@@ -99,4 +101,12 @@ module "rds" {
   subnet_ids      = module.subnets.private_subnet_ids
   rds_sg_id       = module.security_groups.rds_sg_id
   environment     = var.environment
+}
+
+module "secrets_manager" {
+  source               = "../../modules/secrets_manager"
+  db_instance_endpoint = module.rds.db_instance_endpoint
+  db_username          = module.rds.db_username
+  db_password          = module.rds.db_password
+  db_name              = module.rds.db_name
 }

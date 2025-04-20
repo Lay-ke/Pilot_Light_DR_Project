@@ -14,12 +14,14 @@ resource "aws_db_instance" "this" {
   allocated_storage       = 20
   instance_class          = "db.t3.micro"
   engine                  = "mysql"
-  backup_retention_period = 2 # Number of days to retain backups
+  backup_retention_period = 7          # Number of days to retain backups
   username                = var.db_username
   password                = var.db_password
   kms_key_id = var.kms_key_arn
   apply_immediately       = true
+  backup_window = "18:30-19:30" # Time range in UTC for backups
   skip_final_snapshot     = true
+  # final_snapshot_identifier = "${var.db_name}-final-snapshot" # is set when skip_final_snapshot is false
   db_name                 = var.db_name
   publicly_accessible     = false
   storage_type            = "gp2"

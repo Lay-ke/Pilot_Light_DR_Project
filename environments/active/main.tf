@@ -59,7 +59,7 @@ module "ec2" {
 
 # Auto Scaling Group for EC2 instances using Launch Template
 resource "aws_autoscaling_group" "this" {
-
+  name = "${var.environment}-web-asg"
   desired_capacity    = local.env ? 2 : 0
   max_size            = 5
   min_size            = local.env ? 1 : 0
