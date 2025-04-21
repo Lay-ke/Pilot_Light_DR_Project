@@ -146,6 +146,11 @@ resource "aws_iam_role_policy_attachment" "rds_lambda_basic_execution_policy_att
   role       = aws_iam_role.replica_promotion_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "rds_lambda_promotion_policy_attachment" {
+  policy_arn = aws_iam_policy.rds_promotion_policy.arn
+  role       = aws_iam_role.replica_promotion_role.name
+}
+
 
 
 

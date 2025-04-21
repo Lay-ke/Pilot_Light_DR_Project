@@ -1,15 +1,16 @@
 import json
 import boto3
 import logging
+import os
 
 # Initialize the Auto Scaling client
 autoscaling_client = boto3.client('autoscaling')
 
 def lambda_handler(event, context):
     # Get the Auto Scaling Group name, capacity increase, and minimum size increase from the event
-    asg_name = event.get('asg_name', ${asg_name})  # Default to the passed ASG name
-    increase_by = event.get('increase_by', ${increase_by})  # Default to increasing by the passed value
-    min_increase_by = event.get('min_increase_by', ${min_increase_by})  # Default to increasing min size by the passed value
+    asg_name = event.get('asg_name', os.environ.get('asg_name'))  # Default to the passed ASG name
+    increase_by = int(event.get('increase_by', os.environ.get('increase_by')))  # Default to increasing by the passed value
+    min_increase_by = int(event.get('min_increase_by', os.environ.get('min_increase_by')))  # Default to increasing min size by the passed value
     
     if not asg_name:
         return {
@@ -34,8 +35,8 @@ def lambda_handler(event, context):
         current_min_size = response['AutoScalingGroups'][0]['MinSize']
         
         # Calculate the new desired capacity and minimum size
-        new_capacity = current_capacity + increase_by
-        new_min_size = current_min_size + min_increase_by
+        new_capacity = increase_by
+        new_min_size = min_increase_by
         
         # Update the Auto Scaling Group with the new desired capacity and minimum size
         update_response = autoscaling_client.update_auto_scaling_group(

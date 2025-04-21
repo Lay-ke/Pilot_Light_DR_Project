@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_lambda_function" "update_asg_capacity" {
-    function_name = "${var.update_asg_lambda_name}-function"
+    function_name = var.update_asg_lambda_name
     
     runtime = "python3.13"
     role    = var.update_asg_role_arn
@@ -27,7 +27,7 @@ resource "aws_lambda_function" "update_asg_capacity" {
 
 # Lambda function to promote read replica to primary
 resource "aws_lambda_function" "promote_read_replica" {
-  function_name = "${var.promote_replica_lambda_name}-function"
+  function_name = var.promote_replica_lambda_name
   
   runtime = "python3.13"
   role    = var.replica_promotion_role_arn

@@ -1,13 +1,14 @@
 import json
 import boto3
 import logging
+import os
 
 # Initialize the RDS client
 rds_client = boto3.client('rds')
 
 def lambda_handler(event, context):
     # The DB instance identifier of the read replica to promote
-    db_instance_identifier = event.get('db_instance_identifier', ${db_instance_identifier})  # Default to the passed DB instance identifier
+    db_instance_identifier = event.get('db_instance_identifier', os.environ.get('db_instance_identifier'))  # Default to the passed DB instance identifier
 
     if not db_instance_identifier:
         return {

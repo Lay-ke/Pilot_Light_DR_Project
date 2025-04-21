@@ -1,13 +1,13 @@
 variable "update_asg_lambda_name" {
   description = "The name of the Lambda function to update"
   type        = string
-  default = "update_asg_capacity"
+  default = "update_asg_capacity_function"
 }
 
 variable "promote_replica_lambda_name" {
   description = "The name of the Lambda function to promote read replica"
   type        = string
-  default = "promote_read_replica"
+  default = "promote_read_replica_function"
 }
 
 variable "increase_by" {
@@ -33,9 +33,9 @@ variable "db_instance_id" {
 }
 
 variable "update_asg_role_arn" {
-  description = "The role arn for update asg role"
+  description = "The arn for update asg role"
 }
 
 variable "replica_promotion_role_arn" {
-  description = "The role arn for replica promotion role"
+  description = "The arn for replica promotion role"
 }
