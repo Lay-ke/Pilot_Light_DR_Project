@@ -39,3 +39,8 @@ variable "update_asg_role_arn" {
 variable "replica_promotion_role_arn" {
   description = "The arn for replica promotion role"
 }
+
+variable "active_dr_sns_topic_arn" {
+  description = "The ARN of the SNS topic"
+  type        = string 
+}

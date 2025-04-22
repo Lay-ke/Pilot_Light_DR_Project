@@ -13,6 +13,7 @@ def lambda_handler(event, context):
     min_increase_by = int(event.get('min_increase_by', os.environ.get('min_increase_by')))  # Default to increasing min size by the passed value
     
     if not asg_name:
+        print("Error: asg_name is not provided.")
         return {
             'statusCode': 400,
             'body': json.dumps('Error: asg_name is required')
@@ -26,6 +27,7 @@ def lambda_handler(event, context):
         
         # Extract the current desired capacity and minimum size from the response
         if not response['AutoScalingGroups']:
+            print(f"Error: Auto Scaling Group {asg_name} not found.")
             return {
                 'statusCode': 404,
                 'body': json.dumps(f"Error: Auto Scaling Group {asg_name} not found")
@@ -46,6 +48,7 @@ def lambda_handler(event, context):
         )
         
         logging.info(f"Successfully updated ASG {asg_name}: Desired Capacity: {new_capacity}, Min Size: {new_min_size}")
+        print(f"Successfully updated ASG {asg_name}: Desired Capacity: {new_capacity}, Min Size: {new_min_size}")
         
         return {
             'statusCode': 200,
@@ -54,6 +57,7 @@ def lambda_handler(event, context):
 
     except Exception as e:
         logging.error(f"Error updating ASG {asg_name}: {str(e)}")
+        print(f"Error updating ASG {asg_name}: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps(f"Error: {str(e)}")

@@ -47,3 +47,20 @@ resource "aws_lambda_function" "promote_read_replica" {
   }
   
 }
+
+# Grant SNS permission to invoke the Lambda function in the DR region
+resource "aws_lambda_permission" "sns_lambda_permission_promote_read_replica" {
+  statement_id  = "AllowSNSInvoke"
+  action        = "lambda:InvokeFunction"
+  principal     = "sns.amazonaws.com"
+  function_name = aws_lambda_function.promote_read_replica.function_name
+  source_arn    = var.active_dr_sns_topic_arn
+}
+
+resource "aws_lambda_permission" "sns_lambda_permission_update_asg" {
+  statement_id  = "AllowSNSInvoke"
+  action        = "lambda:InvokeFunction"
+  principal     = "sns.amazonaws.com"
+  function_name = aws_lambda_function.update_asg_capacity.function_name
+  source_arn    = var.active_dr_sns_topic_arn
+}

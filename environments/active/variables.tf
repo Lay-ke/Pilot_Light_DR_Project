@@ -104,3 +104,15 @@ variable "db_instance_arn" {
   type        = string
   default     = "value"
 }
+
+variable "promote_replica_lambda_arn" {
+  description = "The arn of the Lambda function to promote read replica"
+  type        = string
+  default     = "arn:aws:lambda:eu-central-1:711387121692:function:promote_read_replica_function"
+}
+
+variable "update_asg_lambda_arn" {
+  description = "The arn of the Lambda function to update"
+  type        = string
+  default     = "arn:aws:lambda:eu-central-1:711387121692:function:update_asg_capacity_function"
+}

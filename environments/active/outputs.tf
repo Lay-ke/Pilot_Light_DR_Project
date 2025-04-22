@@ -25,3 +25,8 @@ output "update_asg_role_arn" {
 output "replica_promotion_role_arn" {
   value = module.iam.replica_promotion_role_arn
 }
+
+output "active_dr_sns_topic_arn" {
+  description = "The ARN of the SNS topic"
+  value       = module.sns.active_dr_sns_topic_arn
+}

@@ -60,7 +60,7 @@ module "ec2" {
 # Auto Scaling Group for EC2 instances using Launch Template
 resource "aws_autoscaling_group" "this" {
   name                = "${var.environment}-web-asg"
-  desired_capacity    = local.env ? 2 : 0
+  desired_capacity    = local.env ? 1 : 0
   max_size            = 5
   min_size            = local.env ? 1 : 0
   vpc_zone_identifier = module.subnets.public_subnet_ids
@@ -113,4 +113,16 @@ module "secrets_manager" {
   db_username          = module.rds.db_username
   db_password          = module.rds.db_password
   db_name              = module.rds.db_name
+}
+
+module "sns" {
+  source                       = "../../modules/sns"
+  replica_promotion_lambda_arn = var.promote_replica_lambda_arn
+  update_asg_lambda_arn        = var.update_asg_lambda_arn
+}
+
+module "cloudwatch_alarm" {
+  source = "../../modules/cloudwatch_alarm"
+  asg_name = aws_autoscaling_group.this.name
+  active_dr_sns_topic_arn = module.sns.active_dr_sns_topic_arn
 }
