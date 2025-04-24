@@ -48,6 +48,12 @@ module "security_groups" {
   vpc_id = module.vpc.vpc_id
 }
 
+module "acm" {
+  source      = "../../modules/acm"
+  environment = var.environment
+  
+}
+
 # Module for Application Load Balancer (ALB)
 module "alb" {
   source     = "../../modules/alb"
@@ -55,20 +61,21 @@ module "alb" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.subnets.public_subnet_ids
   sg_id      = module.security_groups.lb_sg_id
+  certificate_arn = module.acm.certificate_arn
 }
 
 # Module for EC2 instances behind the Load Balancer
 module "ec2" {
-  source                    = "../../modules/ec2"
-  instance_type             = var.instance_type
-  sg_id                     = module.security_groups.web_sg_id
+  source                   = "../../modules/ec2"
+  instance_type            = var.instance_type
+  sg_id                    = module.security_groups.web_sg_id
   iam_instance_profile_arn = data.terraform_remote_state.prod-workspace.outputs.instance_profile_arn
-  ami_id                    = "ami-03250b0e01c28d196"
+  ami_id                   = "ami-03250b0e01c28d196"
 }
 
 # Auto Scaling Group for EC2 instances using Launch Template
 resource "aws_autoscaling_group" "this" {
-  name = "${var.environment}-web-asg"
+  name                = "${var.environment}-web-asg"
   desired_capacity    = 0
   max_size            = 5
   min_size            = 0
@@ -84,7 +91,7 @@ resource "aws_autoscaling_group" "this" {
   wait_for_capacity_timeout = "0"
   force_delete              = true
 
-  depends_on = [ module.secrets_manager ]
+  depends_on = [module.secrets_manager]
 
   tag {
     key                 = "Name"
@@ -112,9 +119,19 @@ module "secrets_manager" {
 }
 
 module "lambda" {
-  source = "../../modules/lambda"
-  db_instance_id = module.rds.db_replica_name
-  asg_name = aws_autoscaling_group.this.name
-  update_asg_role_arn = data.terraform_remote_state.prod-workspace.outputs.update_asg_role_arn
+  source                     = "../../modules/lambda"
+  db_instance_id             = module.rds.db_replica_name
+  asg_name                   = aws_autoscaling_group.this.name
+  update_asg_role_arn        = data.terraform_remote_state.prod-workspace.outputs.update_asg_role_arn
   replica_promotion_role_arn = data.terraform_remote_state.prod-workspace.outputs.replica_promotion_role_arn
+  active_dr_sns_topic_arn    = data.terraform_remote_state.prod-workspace.outputs.active_dr_sns_topic_arn
+}
+
+module "route53" {
+  source = "../../modules/route53"
+  environment = var.environment
+  domain_name = "active.mintah.site"
+  hosted_zone_id = module.acm.hosted_zone_id
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id = module.alb.alb_zone_id
 }
