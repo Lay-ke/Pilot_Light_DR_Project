@@ -39,6 +39,12 @@ module "security_groups" {
   vpc_id = module.vpc.vpc_id
 }
 
+# Module for ACM Certificate
+module "acm" {
+  source      = "../../modules/acm"
+  environment = var.environment
+}
+
 # Module for Application Load Balancer (ALB)
 module "alb" {
   source     = "../../modules/alb"
@@ -46,6 +52,7 @@ module "alb" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.subnets.public_subnet_ids
   sg_id      = module.security_groups.lb_sg_id
+  certificate_arn = module.acm.certificate_arn
 }
 
 # Module for EC2 instances behind the Load Balancer
@@ -54,7 +61,7 @@ module "ec2" {
   instance_type            = var.instance_type
   sg_id                    = module.security_groups.web_sg_id
   iam_instance_profile_arn = module.iam.instance_profile_arn
-  ami_id                   = "ami-0df368112825f8d8f"
+  ami_id                   = "ami-084568db4383264d4"
 }
 
 # Auto Scaling Group for EC2 instances using Launch Template
@@ -121,8 +128,18 @@ module "sns" {
   update_asg_lambda_arn        = var.update_asg_lambda_arn
 }
 
+module "route53" {
+  source = "../../modules/route53"
+  environment = var.environment
+  domain_name = "active.mintah.site"
+  hosted_zone_id = module.acm.hosted_zone_id
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id = module.alb.alb_zone_id
+}
+
 module "cloudwatch_alarm" {
   source = "../../modules/cloudwatch_alarm"
   asg_name = aws_autoscaling_group.this.name
   active_dr_sns_topic_arn = module.sns.active_dr_sns_topic_arn
+  domain_health_check_id = module.route53.health_check_id
 }

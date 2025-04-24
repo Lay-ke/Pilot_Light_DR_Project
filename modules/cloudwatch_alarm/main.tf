@@ -1,3 +1,22 @@
+# Cloudwatch Alarm for Route53 Health Check
+# This alarm will trigger if the health check status is less than 1 (indicating unhealthy)
+resource "aws_cloudwatch_metric_alarm" "primary_unhealthy" {
+  alarm_name          = "PrimaryHealthCheckFailed"
+  namespace           = "AWS/Route53"
+  metric_name         = "HealthCheckStatus"
+  statistic           = "Minimum"
+  period              = 60
+  evaluation_periods  = 1
+  threshold           = 1
+  comparison_operator = "LessThanThreshold"
+  dimensions = {
+    HealthCheckId = var.domain_health_check_id
+  }
+
+  alarm_actions = [var.active_dr_sns_topic_arn]
+}
+
+
 # CloudWatch Alarm for Auto Scaling Group Health
 resource "aws_cloudwatch_metric_alarm" "asg_instance_health" {
   alarm_name                = "ASGInstanceHealthAlarm"

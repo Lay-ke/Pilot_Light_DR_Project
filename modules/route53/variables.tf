@@ -1,22 +1,25 @@
 variable "hosted_zone_id" {
   description = "hosted zone id"
-  type = "string"
-  default = "Z10283623RJNRJEYWN2E1"
+  type = string
 }
 
 variable "domain_name" {
   description = "domain name"
-  type = "string"
-  default = "mintah.site"
+  type = string
 }
 
 variable "alb_dns_name" {
   description = "alb dns name"
-  type = "string"
+  type = string
 }
 
 variable "alb_zone_id" {
   description = "alb zone id"
-  type = "string"
+  type = string
   default = "Z3DZXE0Q79N41H"
+}
+
+variable "environment" {
+  description = "environment"
+  type = string
 }

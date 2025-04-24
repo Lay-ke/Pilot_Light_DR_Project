@@ -48,6 +48,12 @@ module "security_groups" {
   vpc_id = module.vpc.vpc_id
 }
 
+module "acm" {
+  source      = "../../modules/acm"
+  environment = var.environment
+  
+}
+
 # Module for Application Load Balancer (ALB)
 module "alb" {
   source     = "../../modules/alb"
@@ -55,6 +61,7 @@ module "alb" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.subnets.public_subnet_ids
   sg_id      = module.security_groups.lb_sg_id
+  certificate_arn = module.acm.certificate_arn
 }
 
 # Module for EC2 instances behind the Load Balancer
@@ -118,4 +125,13 @@ module "lambda" {
   update_asg_role_arn        = data.terraform_remote_state.prod-workspace.outputs.update_asg_role_arn
   replica_promotion_role_arn = data.terraform_remote_state.prod-workspace.outputs.replica_promotion_role_arn
   active_dr_sns_topic_arn    = data.terraform_remote_state.prod-workspace.outputs.active_dr_sns_topic_arn
+}
+
+module "route53" {
+  source = "../../modules/route53"
+  environment = var.environment
+  domain_name = "active.mintah.site"
+  hosted_zone_id = module.acm.hosted_zone_id
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id = module.alb.alb_zone_id
 }
