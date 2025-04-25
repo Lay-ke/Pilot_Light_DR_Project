@@ -151,6 +151,65 @@ resource "aws_iam_role_policy_attachment" "rds_lambda_promotion_policy_attachmen
   role       = aws_iam_role.replica_promotion_role.name
 }
 
+#################################################################################################################################################
+# IAM Role for Destroy Primary Instance Lambda Function
+resource "aws_iam_role" "destroy_primary_instance_role" {
+  name = "DestroyPrimaryInstance-${var.lambda_role_name}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "destroy_primary_instance_policy" {
+  name        = "rds-promotion-policy"
+  description = "IAM policy to allow Lambda to demote primary instance and create new read replica"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = [
+          "rds:PromoteReadReplica",
+          "rds:DescribeDBInstances",
+          "rds:DescribeDBClusters",
+          "rds:DescribeDBClusterSnapshots",
+          "rds:DeleteDBInstance",
+          "rds:CreateDBInstanceReadReplica",
+          "rds:CreateDBInstance"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+resource "aws_iam_role_policy_attachment" "destroy_primary_instance_lambda_cloudwatch_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
+  role      = aws_iam_role.destroy_primary_instance_role.name
+}
+resource "aws_iam_role_policy_attachment" "destroy_primary_instance_lambda_basic_execution_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  role       = aws_iam_role.destroy_primary_instance_role.name
+}
+
+
+resource "aws_iam_role_policy_attachment" "destroy_primary_instance_lambda_promotion_policy_attachment" {
+  policy_arn = aws_iam_policy.rds_promotion_policy.arn
+  role       = aws_iam_role.destroy_primary_instance_role.name
+}
+
+
+
 
 
 

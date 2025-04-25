@@ -8,7 +8,7 @@ resource "aws_route53_health_check" "primary_region_health_check" {
   port              = 443
   type              = "HTTPS"
   resource_path     = "/crud_app/health.php"
-  failure_threshold = "10"
+  failure_threshold = "5"
   request_interval  = "30"
 
   tags = {
