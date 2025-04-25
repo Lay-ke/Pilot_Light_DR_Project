@@ -27,3 +27,8 @@ output "replica_promotion_role_arn" {
   description = "Rds replica promotion role"
   value = aws_iam_role.replica_promotion_role.arn
 }
+
+output "destroy_primary_instance_role_arn" {
+  description = "Rds destroy primary instance role"
+  value = aws_iam_role.destroy_primary_instance_role.arn
+}

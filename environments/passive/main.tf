@@ -125,6 +125,9 @@ module "lambda" {
   update_asg_role_arn        = data.terraform_remote_state.prod-workspace.outputs.update_asg_role_arn
   replica_promotion_role_arn = data.terraform_remote_state.prod-workspace.outputs.replica_promotion_role_arn
   active_dr_sns_topic_arn    = data.terraform_remote_state.prod-workspace.outputs.active_dr_sns_topic_arn
+  destroy_primary_instance_role_arn = data.terraform_remote_state.prod-workspace.outputs.destroy_primary_instance_role_arn
+  dr_db_id = data.terraform_remote_state.prod-workspace.outputs.replica_db_name
+  primary_db_id = data.terraform_remote_state.prod-workspace.outputs.primary_db_name
 }
 
 module "route53" {
