@@ -5,6 +5,20 @@ This project implements a resilient **Disaster Recovery (DR)** strategy on AWS b
 
 ---
 
+## Architecture Diagram
+
+Below is a high-level architecture diagram illustrating the AWS Disaster Recovery setup:
+
+![AWS Disaster Recovery Architecture](./Pilot_Light_DR.png)
+
+### Diagram Explanation:
+- The **primary region** hosts the active environment, including EC2 instances, RDS, and other resources.
+- The **secondary region** is configured as a passive standby, with resources like RDS read replicas and ASG set to minimal capacity.
+- **Route 53** ensures DNS-based failover, while **CloudWatch, SNS, and Lambda** automate recovery actions.
+- **S3 cross-region replication** ensures critical data is synchronized between regions.
+
+Ensure the `assets/` directory contains the `aws-dr-architecture.png` file for the image to render correctly.
+
 ## Project Directory Structure
 
 ```
@@ -25,6 +39,10 @@ project-root/
 │   ├── ec2/
 │   ├── rds/
 │   ├── s3/
+|   ├── iam/
+|   ├── lambda/
+|   ├── acm/
+|   ├── sg/
 │   └── route53/
 │
 ├── functions/
