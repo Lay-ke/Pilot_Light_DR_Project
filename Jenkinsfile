@@ -38,6 +38,7 @@ pipeline {
                 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
                     sh '''
+                        cd environments/active
                         terraform plan -out=tfplan
                     '''
                 }
@@ -50,6 +51,7 @@ pipeline {
                 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
                     sh '''
+                        cd environments/active
                         terraform apply -auto-approve tfplan
                     '''
                 }
@@ -65,10 +67,17 @@ pipeline {
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
                     sh '''
+                        cd environments/active
                         terraform destroy -auto-approve
                     '''
                 }
             }
+        }
+    }
+    stage('Wait Before DR') {
+        steps {
+            echo "Waiting for a few minutes before proceeding to the DR region"
+            sleep time: 5, unit: 'MINUTES' // Adjust the time as needed
         }
     }
 
@@ -123,6 +132,7 @@ pipeline {
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-credentials']]) {
                     sh '''
+                        cd environments/passive
                         terraform destroy -auto-approve
                     '''
                 }

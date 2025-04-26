@@ -152,25 +152,25 @@ The SNS topic then invokes a Lambda function that resides in the disaster recove
 Disaster recovery infrastructure introduces additional cost overhead, so engineering trade-offs are necessary to keep DR setups cost-efficient while maintaining resilience.
 
 ### 1. **Passive Region Optimization**
-- Configure **ASG desired capacity = 0** to keep EC2 instances off by default.
-- Use **EC2 Image Builder** and **user data scripts** for fast provisioning.
-- Use **on-demand RDS read replicas** and promote only during failover.
+- Configured **ASG desired capacity = 0** to keep EC2 instances off by default.
+- Used **EC2 Image Builder** and **user data scripts** for fast provisioning.
+- Used **on-demand RDS read replicas** and promote only during failover.
 
 ### 2. **Pay-Per-Use Serverless Operations**
 - Lambda and SNS incur cost only during execution.
 - All DR logic is event-driven, avoiding idle cost buildup.
 
 ### 3. **S3 Cross-Region Replication Efficiency**
-- Replicate only critical buckets.
-- Use **lifecycle policies** to transition older objects to Glacier.
+- Replicated only critical buckets(such as those storing application code)
+- Used **lifecycle policies** to transition older objects to Glacier.
 
 ### 4. **Minimal Health Check Setup**
 - Route 53 health checks incur minor charges.
-- Monitor only the application’s most critical endpoint.
+- Monitored only the application’s most critical endpoint.
 
 ### 5. **Terraform Cost Control**
-- Use `count`, `for_each`, and conditional logic to provision resources only in the needed regions.
-- Enable **modular design** for reuse and version control.
+- Used `count`, `for_each`, and conditional logic to provision resources only in the needed regions.
+- Enabled **modular design** for reuse and version control.
 
 ---
 
